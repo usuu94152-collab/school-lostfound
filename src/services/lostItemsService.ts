@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { createLostItemSamples } from '../data/sampleData'
 import type { CreateLostItemInput, LostItem } from '../types/models'
+import { googleSheetsApi, isGoogleSheetsConfigured } from './googleSheetsApi'
 import { readCollection, writeCollection } from './localStorageStore'
 
 const LOST_ITEMS_KEY = 'school-app:lost-items'
@@ -26,12 +27,25 @@ function generateId(prefix: string) {
   return `${prefix}-${Date.now()}`
 }
 
+function normalizeLostItem(item: LostItem): LostItem {
+  return {
+    ...item,
+    description: item.description ?? '',
+    imageUrl: item.imageUrl || undefined,
+    itemName: item.itemName ?? '',
+  }
+}
+
 export async function getLostItems() {
+  if (isGoogleSheetsConfigured()) {
+    const items = await googleSheetsApi.getLostItems()
+    return sortLostItems(items.map(normalizeLostItem))
+  }
+
   return sortLostItems(readCollection(LOST_ITEMS_KEY, createLostItemSamples))
 }
 
 export async function createLostItem(input: CreateLostItemInput) {
-  const items = readCollection<LostItem>(LOST_ITEMS_KEY, createLostItemSamples)
   const nextItem: LostItem = {
     ...input,
     description: input.description.trim(),
@@ -40,11 +54,22 @@ export async function createLostItem(input: CreateLostItemInput) {
     createdAt: new Date().toISOString(),
   }
 
+  if (isGoogleSheetsConfigured()) {
+    await googleSheetsApi.createLostItem(nextItem)
+    return nextItem
+  }
+
+  const items = readCollection<LostItem>(LOST_ITEMS_KEY, createLostItemSamples)
   writeCollection(LOST_ITEMS_KEY, sortLostItems([nextItem, ...items]))
   return nextItem
 }
 
 export async function deleteLostItem(id: string) {
+  if (isGoogleSheetsConfigured()) {
+    await googleSheetsApi.deleteLostItem(id)
+    return
+  }
+
   const items = readCollection<LostItem>(LOST_ITEMS_KEY, createLostItemSamples)
   const nextItems = items.filter((item) => item.id !== id)
   writeCollection(LOST_ITEMS_KEY, nextItems)
