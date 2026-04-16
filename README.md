@@ -41,6 +41,12 @@ npm run build
 npm run lint
 ```
 
+## GitHub Pages 배포
+
+- 배포 주소: https://usuu94152-collab.github.io/school-lostfound/
+- `main` 브랜치에 push하면 `.github/workflows/deploy-pages.yml`이 자동으로 빌드하고 배포합니다.
+- GitHub 저장소의 `Settings > Pages`에서 `Build and deployment`의 `Source`가 `GitHub Actions`로 선택되어 있어야 합니다.
+
 ## 폴더 구조
 
 ```text
