@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'
+const SPREADSHEET_ID = '1k8P4pzrkI1626ax0YiNmyBZ0Jmsf-CT_j3hM5Swhl3s'
 const API_TOKEN = ''
 
 const LOST_SHEET_NAME = '분실물'
