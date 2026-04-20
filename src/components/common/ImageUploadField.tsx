@@ -79,7 +79,7 @@ export function ImageUploadField({
                 사진 선택하기
               </div>
               <p className="text-xs text-ink-700/60">
-                너무 큰 이미지는 업로드되지 않을 수 있습니다.
+                최대 10MB까지 업로드할 수 있습니다.
               </p>
             </div>
           </div>

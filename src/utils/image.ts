@@ -1,9 +1,10 @@
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024
+const MAX_IMAGE_SIZE_MB = 10
+const MAX_IMAGE_SIZE = MAX_IMAGE_SIZE_MB * 1024 * 1024
 
 export function readFileAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
     if (file.size > MAX_IMAGE_SIZE) {
-      reject(new Error('이미지 용량은 2MB 이하로 업로드해 주세요.'))
+      reject(new Error(`이미지 용량은 ${MAX_IMAGE_SIZE_MB}MB 이하로 업로드해 주세요.`))
       return
     }
 
