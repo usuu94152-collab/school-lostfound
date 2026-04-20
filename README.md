@@ -2,7 +2,7 @@
 
 학교에서 사용하는 `분실물 관리 + 교복 물려주기 관리` 통합 웹앱입니다.  
 React + TypeScript + Tailwind CSS 기반이며, 현재는 `mock + localStorage`로 동작하고 이후 Google Sheets / Google Apps Script Web App API로 쉽게 교체할 수 있도록 서비스 레이어를 분리했습니다.
-`VITE_GOOGLE_SCRIPT_URL`을 설정하면 Google Sheets 기반 조회/등록/삭제 모드로 전환됩니다.
+`VITE_GOOGLE_SCRIPT_URL`을 설정하면 Google Sheets 기반 조회/등록/삭제 모드로 전환되며, Apps Script는 첨부 사진을 Google Drive에 저장하고 시트에는 이미지 URL만 남깁니다.
 
 ## 주요 기능
 

@@ -21,9 +21,10 @@ https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
 2. [google-apps-script-example.js](C:/Users/User/Desktop/codex/분실물/app-temp/docs/google-apps-script-example.js) 내용을 붙여넣습니다.
 3. `SPREADSHEET_ID` 값을 실제 스프레드시트 ID로 바꿉니다.
 4. 원하면 `API_TOKEN`에 간단한 토큰 값을 넣습니다.
-5. `setupSpreadsheet` 함수를 한 번 실행합니다.
+5. 특정 Google Drive 폴더에 사진을 저장하려면 `IMAGE_FOLDER_ID`에 폴더 ID를 넣습니다.
+6. `setupSpreadsheet` 함수를 한 번 실행합니다.
 
-`setupSpreadsheet`를 실행하면 아래 탭과 헤더가 자동 생성됩니다.
+`setupSpreadsheet`를 실행하면 아래 탭과 헤더가 자동 생성되고, 사진 저장용 Google Drive 폴더도 준비됩니다.
 
 ## 3. 시트 구조
 
@@ -112,20 +113,37 @@ VITE_GOOGLE_SCRIPT_TOKEN
 
 ## 7. 사진 관리
 
-시트의 `imageUrl`에는 이미지 파일 자체가 아니라 이미지 URL을 저장하는 것을 권장합니다.
+시트의 `imageUrl`에는 이미지 파일 자체가 아니라 Google Drive 이미지 URL만 저장합니다.
 
-권장 흐름:
+앱에서 사진을 첨부해 등록하면 아래 흐름으로 처리됩니다.
 
-1. 사진을 Google Drive, Firebase Storage, Cloudinary 등에 업로드합니다.
-2. 공유 가능한 이미지 URL을 복사합니다.
-3. `imageUrl` 컬럼에 URL을 넣습니다.
+1. 브라우저가 사진을 Apps Script로 전송합니다.
+2. Apps Script가 사진을 Google Drive 폴더에 파일로 저장합니다.
+3. Drive 파일을 링크가 있는 사용자에게 공개합니다.
+4. 시트의 `imageUrl` 컬럼에는 Drive 이미지 URL만 저장합니다.
 
-현재 앱의 사진 업로드는 브라우저 미리보기와 mock 저장에 적합합니다.  
-운영 단계에서 많은 사진을 관리하려면 별도 이미지 저장소를 붙이고, 시트에는 URL만 저장하는 방식이 안정적입니다.
+사진 저장 폴더 설정:
+
+```js
+const IMAGE_FOLDER_ID = ''
+const IMAGE_FOLDER_NAME = '학교 분실물 교복 사진'
+```
+
+`IMAGE_FOLDER_ID`를 비워두면 Apps Script가 `IMAGE_FOLDER_NAME` 이름의 폴더를 찾아 사용하고, 없으면 새로 만듭니다.  
+이미 만들어둔 폴더를 쓰고 싶다면 Drive 폴더 주소에서 ID를 복사해 `IMAGE_FOLDER_ID`에 넣으면 됩니다.
+
+기존 시트에 `data:image/...;base64` 형태의 긴 이미지 문자열이 이미 저장되어 있다면 Apps Script에서 아래 함수를 한 번 실행하세요.
+
+```js
+migrateInlineImagesToDrive
+```
+
+이 함수는 기존 base64 이미지를 Drive 파일로 옮기고, 시트의 `imageUrl` 값을 Drive 이미지 URL로 바꿉니다.
 
 ## 8. 삭제 정책
 
-현재 삭제는 시트 행을 실제로 삭제합니다.
+현재 삭제는 시트 행을 실제로 삭제합니다.  
+Apps Script로 등록된 Drive 이미지 URL이 있으면 삭제 시 해당 Drive 이미지 파일도 휴지통으로 이동합니다.
 
 운영 단계에서 기록을 남기고 싶다면 아래 컬럼을 추가해 soft delete 방식으로 확장할 수 있습니다.
 
